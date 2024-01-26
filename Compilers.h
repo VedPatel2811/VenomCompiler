@@ -62,14 +62,14 @@
  * ............................................................................
  */
 
-/* TO_DO: Adjust your language (cannot be "Venom") */
+/* TO_DO: Adjust your language (cannot be "venom") */
 
 /* Language name */
-#define STR_LANGNAME	"Venom"
+#define STR_LANGNAME	"venom"
 
 /* Logical constants - adapt for your language */
-#define VENOM_TRUE  1
-#define VENOM_FALSE 0
+#define True  1
+#define False 0
 
 /*
 ------------------------------------------------------------
@@ -81,17 +81,18 @@ NOTE: Some types may not be directly used by your language,
 
 
 /* TO_DO: Define your typedefs */
-typedef char			Venom_char;
-typedef char* Venom_string;
-typedef int				Venom_intg;
-typedef float			Venom_real;
-typedef void			Venom_void;
+//typedef char			char;
+typedef char*			string;
+//typedef int			int;
+//typedef float			float;
+//typedef void			void;
 
-typedef unsigned char	Venom_boln;
-typedef unsigned char	Venom_byte;
 
-typedef long			Venom_long;
-typedef double			Venom_doub;
+typedef unsigned char	Bool;
+typedef unsigned char	byte;
+
+typedef long			long;
+//typedef double		double;
 
 /*
 ------------------------------------------------------------
@@ -113,11 +114,11 @@ Main functions signatures
 (Code will be updated during next assignments)
 ------------------------------------------------------------
 */
-Venom_intg mainReader(Venom_intg argc, Venom_string* argv);
+int mainReader(int argc, string* argv);
 
 /* 
 TO_DO: Include later mainScaner (A22) and mainParser (A32)
 */
-Venom_void printLogo();
+void printLogo();
 
 #endif
