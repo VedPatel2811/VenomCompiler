@@ -81,7 +81,7 @@ NOTE: Some types may not be directly used by your language,
 
 
 /* TO_DO: Define your typedefs */
-
+//typedef char			char;
 typedef char*			string;
 //typedef int			int;
 //typedef float			float;
