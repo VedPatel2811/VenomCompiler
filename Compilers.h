@@ -119,6 +119,8 @@ int mainReader(int argc, string* argv);
 /* 
 TO_DO: Include later mainScaner (A22) and mainParser (A32)
 */
+//int mainScanner(int args, string* argv);
+//int mainParser(int args, string* argv);
 void printLogo();
 
 #endif
