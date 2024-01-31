@@ -11,6 +11,9 @@
 |              ....                     |
 |          ........::.::::::.           |
 |        .:........::.:^^^~~~:          |
+
+
+
 |        :^^::::::^^^::^!7??7~^.        |
 |       .:^~~^!77777~~7?YY?7??7^.       |
 |       :.^~!??!^::::^^~!?5PY??!~.      |
@@ -88,6 +91,7 @@
 BufferPointer readerCreate(int size, int increment, int mode) {
 	BufferPointer readerPointer;
 	/* TO_DO: Defensive programming */
+	
 	/* TO_DO: Adjust the values according to parameters */
 	readerPointer = (BufferPointer)calloc(1, sizeof(Buffer));
 	if (!readerPointer)

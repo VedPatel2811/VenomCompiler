@@ -9,7 +9,7 @@
       "name": "VenomCompiler.exe",
       "args": [
         "r",
-        "INPUT1_Hello.sof"
+        "INPUT1_Hello.ven"
       ]
     }
   ]

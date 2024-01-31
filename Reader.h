@@ -121,7 +121,7 @@ typedef struct bufferReader {
 	int		increment;			/* character array increment factor */
 	int		mode;				/* operational mode indicator */
 	byte		flags;				/* contains character array reallocation flag and end-of-buffer flag */
-	Position		position;				/* Offset / position field */
+	Position	position;				/* Offset / position field */
 	int		histogram[Nchar];	/* Statistics of chars */
 	int		numReaderErrors;	/* Number of errors from Reader */
 } Buffer, *BufferPointer;
