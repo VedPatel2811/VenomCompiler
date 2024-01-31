@@ -91,14 +91,29 @@
 BufferPointer readerCreate(int size, int increment, int mode) {
 	BufferPointer readerPointer;
 	/* TO_DO: Defensive programming */
-	
+	if (size <= 0)
+		size = READER_DEFAULT_SIZE;
+	if (increment <= 0) {
+		increment = READER_DEFAULT_INCREMENT;
+		mode = MODE_FIXED;
+	}
 	/* TO_DO: Adjust the values according to parameters */
+	if (mode != MODE_FIXED && mode != MODE_ADDIT && mode != MODE_MULTI)
+		return NULL;
+	
 	readerPointer = (BufferPointer)calloc(1, sizeof(Buffer));
 	if (!readerPointer)
 		return NULL;
 	readerPointer->content = (string)malloc(size);
 	/* TO_DO: Defensive programming */
+	if (!readerPointer->content) {
+		free(readerPointer);
+		return NULL;
+	} 
 	/* TO_DO: Initialize the histogram */
+	for (int i = 0; i < Nchar; i++) {
+		readerPointer->histogram[i] = 0;
+	}
 	readerPointer->size = size;
 	readerPointer->increment = increment;
 	readerPointer->mode = mode;
@@ -134,6 +149,9 @@ BufferPointer readerAddchar(BufferPointer const readerPointer, char ch) {
 	string tempReader = NULL;
 	int newSize = 0;
 	/* TO_DO: Defensive programming */
+	if (!readerPointer)
+		return NULL;
+	
 	/* TO_DO: Reset Realocation */
 	/* TO_DO: Test the inclusion of chars */
 	if (readerPointer->position.wrte * (int)sizeof(char) < readerPointer->size) {
@@ -160,6 +178,7 @@ BufferPointer readerAddchar(BufferPointer const readerPointer, char ch) {
 	}
 	/* TO_DO: Add the char */
 	readerPointer->content[readerPointer->position.wrte++] = ch;
+	readerPointer->histogram[ch]++;
 	/* TO_DO: Updates histogram */
 	return readerPointer;
 }
@@ -604,6 +623,10 @@ byte readerGetFlags(BufferPointer const readerPointer) {
 */
 void readerPrintStat(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
+	for (int i = 0; i < Nchar; i++) {
+		if (readerPointer->histogram[i] > 0)
+			printf("Statistics[%c]=%d\n", i, readerPointer->histogram[i]);
+	}
 	/* TO_DO: Print the histogram */
 }
 
