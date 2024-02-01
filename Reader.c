@@ -100,7 +100,7 @@ BufferPointer readerCreate(int size, int increment, int mode) {
 	if (mode != MODE_FIXED && mode != MODE_ADDIT && mode != MODE_MULTI)
 		return NULL;
 	/* TO_DO: Adjust the values according to parameters */
-<<<<<<< HEAD
+
 	switch (mode) {
 	case MODE_FIXED:
 		// In fixed mode, 'increment' might be irrelevant
@@ -125,10 +125,7 @@ BufferPointer readerCreate(int size, int increment, int mode) {
 		// If mode is not recognized, return NULL
 		return NULL;
 	}
-=======
 
->>>>>>> b93474468b5360198e5497c25ef0a0f039d9849d
-	
 	readerPointer = (BufferPointer)calloc(1, sizeof(Buffer));
 	if (!readerPointer)
 		return NULL;
@@ -146,7 +143,10 @@ BufferPointer readerCreate(int size, int increment, int mode) {
 	readerPointer->increment = increment;
 	readerPointer->mode = mode;
 	/* TO_DO: Initialize flags */
+	readerPointer->flags = READER_DEFAULT_FLAG; // Set all flags to default
+
 	/* TO_DO: The created flag must be signalized as EMP */
+	readerPointer->flags |= EMP_FLAG_MASK; // Set the EMP flag
 	/* NEW: Cleaning the content */
 	if (readerPointer->content)
 		readerPointer->content[0] = READER_TERMINATOR;

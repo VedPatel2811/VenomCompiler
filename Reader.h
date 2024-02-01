@@ -95,9 +95,13 @@ enum READER_MODE {
 /* BITS                                (7654.3210) */
 #define READER_DEFAULT_FLAG 0x00 	/* (0000.0000)_2 = (000)_10 */
 /* TO_DO: BIT 3: END = End of buffer flag */
+#define END_FLAG_MASK 0x08 /* 0000 1000 - Bit 3 */
 /* TO_DO: BIT 2: REL = Rellocation memory flag */
+#define REL_FLAG_MASK 0x04 /* 0000 0100 - Bit 2 */
 /* TO_DO: BIT 1: EMP = Buffer empty flag */
+#define EMP_FLAG_MASK 0x02 /* 0000 0010 - Bit 1 */
 /* TO_DO: BIT 0: FUL = Buffer full flag */
+#define FUL_FLAG_MASK 0x01 /* 0000 0001 - Bit 0 */
 
 #define Nchar				128			/* chars from 0 to 127 */
 
