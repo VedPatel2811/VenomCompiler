@@ -179,22 +179,36 @@ BufferPointer readerAddchar(BufferPointer const readerPointer, char ch) {
 	/* TO_DO: Defensive programming */
 	if (!readerPointer)
 		return NULL;
-	
+
+	if (ch < 0 || ch >= Nchar)
+		return NULL;
 	/* TO_DO: Reset Realocation */
+	readerPointer->flags &= ~REL_FLAG_MASK;
 	/* TO_DO: Test the inclusion of chars */
 	if (readerPointer->position.wrte * (int)sizeof(char) < readerPointer->size) {
 		/* TO_DO: This buffer is NOT full */
+		readerPointer->content[readerPointer->position.wrte++] = ch;
+		readerPointer->histogram[ch]++;
 	} else {
 		/* TO_DO: Reset Full flag */
+		 // The buffer is full; handle according to the mode
+		if (readerPointer->flags & FUL_FLAG_MASK) {
+			// If the buffer is already full, return NULL
+			return NULL;
+		}
 		switch (readerPointer->mode) {
 		case MODE_FIXED:
+			// Cannot reallocate, set FUL flag and return NULL
+			readerPointer->flags |= FUL_FLAG_MASK;
 			return NULL;
 		case MODE_ADDIT:
 			/* TO_DO: Adjust new size */
+			newSize = readerPointer->size + readerPointer->increment;
 			/* TO_DO: Defensive programming */
 			break;
 		case MODE_MULTI:
 			/* TO_DO: Adjust new size */
+			newSize = readerPointer->size * readerPointer->increment;
 			/* TO_DO: Defensive programming */
 			break;
 		default:
@@ -203,6 +217,22 @@ BufferPointer readerAddchar(BufferPointer const readerPointer, char ch) {
 		/* TO_DO: New reader allocation */
 		/* TO_DO: Defensive programming */
 		/* TO_DO: Check Relocation */
+		if (newSize > READER_MAX_SIZE || newSize <= readerPointer->size) {
+			readerPointer->flags |= FUL_FLAG_MASK;
+			return NULL;
+		}
+		tempReader = (string)realloc(readerPointer->content, newSize);
+		if (!tempReader) {
+			// Reallocation failed, return NULL
+			return NULL;
+		}
+
+		// Check if the memory address has changed
+		if (tempReader != readerPointer->content) {
+			readerPointer->flags |= REL_FLAG_MASK;
+		}
+		readerPointer->content = tempReader;
+		readerPointer->size = newSize;
 	}
 	/* TO_DO: Add the char */
 	readerPointer->content[readerPointer->position.wrte++] = ch;

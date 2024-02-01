@@ -86,7 +86,7 @@ enum READER_MODE {
 /* CONSTANTS DEFINITION: PREFIXED BY LANGUAGE NAME (SOFIA) .................................. */
 
 /* You should add your own constant definitions here */
-#define READER_MAX_SIZE	int_MAX-1	/* maximum capacity */ 
+#define READER_MAX_SIZE	INT_MAX-1	/* maximum capacity */ 
 
 #define READER_DEFAULT_SIZE			250		/* default initial buffer reader capacity */
 #define READER_DEFAULT_INCREMENT	10		/* default increment factor */
@@ -102,6 +102,7 @@ enum READER_MODE {
 #define EMP_FLAG_MASK 0x02 /* 0000 0010 - Bit 1 */
 /* TO_DO: BIT 0: FUL = Buffer full flag */
 #define FUL_FLAG_MASK 0x01 /* 0000 0001 - Bit 0 */
+
 
 #define Nchar				128			/* chars from 0 to 127 */
 
