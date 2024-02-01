@@ -100,6 +100,7 @@ BufferPointer readerCreate(int size, int increment, int mode) {
 	if (mode != MODE_FIXED && mode != MODE_ADDIT && mode != MODE_MULTI)
 		return NULL;
 	/* TO_DO: Adjust the values according to parameters */
+<<<<<<< HEAD
 	switch (mode) {
 	case MODE_FIXED:
 		// In fixed mode, 'increment' might be irrelevant
@@ -124,6 +125,9 @@ BufferPointer readerCreate(int size, int increment, int mode) {
 		// If mode is not recognized, return NULL
 		return NULL;
 	}
+=======
+
+>>>>>>> b93474468b5360198e5497c25ef0a0f039d9849d
 	
 	readerPointer = (BufferPointer)calloc(1, sizeof(Buffer));
 	if (!readerPointer)
@@ -223,7 +227,11 @@ BufferPointer readerAddchar(BufferPointer const readerPointer, char ch) {
 */
 Bool readerClear(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer)
+		return False;
 	/* TO_DO: Adjust flags original */
+
+
 	readerPointer->position.wrte = readerPointer->position.mark = readerPointer->position.read = 0;
 	return True;
 }
@@ -244,7 +252,10 @@ Bool readerClear(BufferPointer const readerPointer) {
 */
 Bool readerFree(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer)
+		return False;
 	/* TO_DO: Free pointers */
+	free(readerPointer);
 	return True;
 }
 
@@ -264,7 +275,10 @@ Bool readerFree(BufferPointer const readerPointer) {
 */
 Bool readerIsFull(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer)
+		return False;
 	/* TO_DO: Check flag if buffer is FUL */
+
 	return False;
 }
 
@@ -285,6 +299,8 @@ Bool readerIsFull(BufferPointer const readerPointer) {
 */
 Bool readerIsEmpty(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer)
+		return False;
 	/* TO_DO: Check flag if buffer is EMP */
 	return False;
 }
@@ -306,6 +322,8 @@ Bool readerIsEmpty(BufferPointer const readerPointer) {
 */
 Bool readerSetMark(BufferPointer const readerPointer, int mark) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer)
+		return False;
 	/* TO_DO: Adjust mark */
 	readerPointer->position.mark = mark;
 	return True;
@@ -390,6 +408,8 @@ int readerLoad(BufferPointer const readerPointer, FILE* const fileDescriptor) {
 */
 Bool readerRecover(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer)
+		return False;
 	/* TO_DO: Recover positions */
 	readerPointer->position.read = 0;
 	return True;
