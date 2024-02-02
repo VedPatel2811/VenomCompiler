@@ -752,8 +752,12 @@ void readerPrintStat(BufferPointer const readerPointer) {
 		return;
 	/* TO_DO: Print the histogram */
 	for (int i = 0; i < Nchar; i++) {
-		if (readerPointer->histogram[i] > 0)
-			printf("Statistics[%c]=%d\n", i, readerPointer->histogram[i]);
+		if (readerPointer->histogram[i] > 0){
+			printf("B[%c]=%d%s, ", i, readerPointer->histogram[i]);
+			if ((i + 1) % 10 == 0) {
+				printf("\n");
+			}
+		}
 	}
 }
 
