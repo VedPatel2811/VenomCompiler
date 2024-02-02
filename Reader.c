@@ -103,26 +103,22 @@ BufferPointer readerCreate(int size, int increment, int mode) {
 
 	switch (mode) {
 	case MODE_FIXED:
-		// In fixed mode, 'increment' might be irrelevant
-		increment = 0; // Or some other logic as per your requirement
+		increment = 0;
 		break;
 
 	case MODE_ADDIT:
-		// In additive mode, ensure 'increment' is sensible
 		if (increment <= 0) {
 			increment = READER_DEFAULT_INCREMENT;
 		}
 		break;
 
 	case MODE_MULTI:
-		// In multiplicative mode, ensure 'increment' represents the growth factor correctly
 		if (increment <= 1) {
 			increment = 2; 
 		}
 		break;
 
 	default:
-		// If mode is not recognized, return NULL
 		return NULL;
 	}
 
@@ -381,9 +377,9 @@ int readerPrint(BufferPointer const readerPointer) {
 	c = readerGetchar(readerPointer);
 	/* TO_DO: Check flag if buffer EOB has achieved */
 	while (cont < readerPointer->position.wrte) {
-		cont++;
 		printf("%c", c);
 		c = readerGetchar(readerPointer);
+		cont++;
 	}
 	return cont;
 }
