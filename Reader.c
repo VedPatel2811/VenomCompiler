@@ -173,11 +173,9 @@ BufferPointer readerAddchar(BufferPointer const readerPointer, char ch) {
 	string tempReader = NULL;
 	int newSize = 0;
 	/* TO_DO: Defensive programming */
-	if (!readerPointer)
+	if (!readerPointer || ch < 0 || ch >= Nchar)
 		return NULL;
-
-	if (ch < 0 || ch >= Nchar)
-		return NULL;
+		
 	/* TO_DO: Reset Realocation */
 	readerPointer->flags &= ~REL_FLAG_MASK;
 	/* TO_DO: Test the inclusion of chars */
@@ -673,7 +671,10 @@ int readerGetMode(BufferPointer const readerPointer) {
 */
 byte readerGetFlags(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer)
+		return 
 	/* TO_DO: Return flags */
+
 	return 0;
 }
 
@@ -693,11 +694,13 @@ byte readerGetFlags(BufferPointer const readerPointer) {
 */
 void readerPrintStat(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
+	if (!readerPointer)
+		return;
+	/* TO_DO: Print the histogram */
 	for (int i = 0; i < Nchar; i++) {
 		if (readerPointer->histogram[i] > 0)
 			printf("Statistics[%c]=%d\n", i, readerPointer->histogram[i]);
 	}
-	/* TO_DO: Print the histogram */
 }
 
 /*
@@ -716,5 +719,14 @@ void readerPrintStat(BufferPointer const readerPointer) {
 int readerNumErrors(BufferPointer const readerPointer) {
 	/* TO_DO: Defensive programming */
 	/* TO_DO: Returns the number of errors */
+	if(!readerPointer)
 	return 0;
+
+	int errorCount = 0;
+
+	for (int i = Nchar; i < 256; i++) {
+		if (readerPointer->histogram[i] > 0)
+			errorCount += readerPointer->histogram[i];
+	}
+	return errorCount;
 }
