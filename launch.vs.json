@@ -9,7 +9,7 @@
       "name": "VenomCompiler.exe",
       "args": [
         "r",
-        "INPUT3_Factorial.ven"
+        "INPUT6_Big.ven"
       ]
     }
   ]

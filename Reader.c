@@ -172,8 +172,12 @@ BufferPointer readerCreate(int size, int increment, int mode) {
 BufferPointer readerAddchar(BufferPointer const readerPointer, char ch) {
 	string tempReader = NULL;
 	int newSize = 0;
+
 	/* TO_DO: Defensive programming */
 	if (!readerPointer || ch < 0 || ch >= Nchar)
+		return NULL;
+
+	if (readerPointer->flags & FUL_FLAG_MASK)
 		return NULL;
 		
 	/* TO_DO: Reset Realocation */
@@ -183,51 +187,50 @@ BufferPointer readerAddchar(BufferPointer const readerPointer, char ch) {
 		/* TO_DO: This buffer is NOT full */
 		readerPointer->content[readerPointer->position.wrte++] = ch;
 		readerPointer->histogram[ch]++;
-	} else {
-		/* TO_DO: Reset Full flag */
-		 // The buffer is full; handle according to the mode
-		if (readerPointer->flags & FUL_FLAG_MASK) {
-			// If the buffer is already full, return NULL
-			return NULL;
-		}
-		switch (readerPointer->mode) {
-		case MODE_FIXED:
-			// Cannot reallocate, set FUL flag and return NULL
-			readerPointer->flags |= FUL_FLAG_MASK;
-			return NULL;
-		case MODE_ADDIT:
-			/* TO_DO: Adjust new size */
-			newSize = readerPointer->size + readerPointer->increment;
-			/* TO_DO: Defensive programming */
-			break;
-		case MODE_MULTI:
-			/* TO_DO: Adjust new size */
-			newSize = readerPointer->size * readerPointer->increment;
-			/* TO_DO: Defensive programming */
-			break;
-		default:
-			return NULL;
-		}
-		/* TO_DO: New reader allocation */
+		return readerPointer;
+	} 
+	/* TO_DO: Reset Full flag */
+		
+	switch (readerPointer->mode) {
+	case MODE_FIXED:
+		// Cannot reallocate, set FUL flag and return NULL
+		readerPointer->flags |= FUL_FLAG_MASK;
+		return NULL;
+	case MODE_ADDIT:
+		/* TO_DO: Adjust new size */
+		newSize = readerPointer->size + readerPointer->increment;
 		/* TO_DO: Defensive programming */
-		/* TO_DO: Check Relocation */
-		if (newSize > READER_MAX_SIZE || newSize <= readerPointer->size) {
-			readerPointer->flags |= FUL_FLAG_MASK;
-			return NULL;
-		}
-		tempReader = (string)realloc(readerPointer->content, newSize);
-		if (!tempReader) {
-			// Reallocation failed, return NULL
-			return NULL;
-		}
+		break;
+	case MODE_MULTI:
+		/* TO_DO: Adjust new size */
+		newSize = readerPointer->size * readerPointer->increment;
+		/* TO_DO: Defensive programming */
+		break;
 
-		// Check if the memory address has changed
-		if (tempReader != readerPointer->content) {
-			readerPointer->flags |= REL_FLAG_MASK;
-		}
-		readerPointer->content = tempReader;
-		readerPointer->size = newSize;
+	default:
+		return NULL;
 	}
+	/* TO_DO: New reader allocation */
+	/* TO_DO: Defensive programming */
+	/* TO_DO: Check Relocation */
+	if (newSize <= 0 || newSize > READER_MAX_SIZE) {
+		readerPointer->flags |= FUL_FLAG_MASK;
+		return NULL;
+	}
+	tempReader = (string)realloc(readerPointer->content, newSize);
+
+	if (!tempReader) {
+	// Reallocation failed, return NULL
+	return NULL;
+	}
+
+	// Check if the memory address has changed
+	if (tempReader != readerPointer->content) {
+		readerPointer->flags |= REL_FLAG_MASK;
+	}
+	readerPointer->content = tempReader;
+	readerPointer->size = newSize;
+	
 	/* TO_DO: Add the char */
 	readerPointer->content[readerPointer->position.wrte++] = ch;
 	readerPointer->histogram[ch]++;
@@ -391,8 +394,8 @@ int readerPrint(BufferPointer const readerPointer) {////////////////////////////
 		c = readerGetchar(readerPointer);
 		cont++;
 	}*/
+	c = readerGetchar(readerPointer);
 	while (cont < readerPointer->position.wrte) {
-		c = readerGetchar(readerPointer);
 		printf("%c", c);
 		c = readerGetchar(readerPointer);
 		cont++;
@@ -751,12 +754,14 @@ void readerPrintStat(BufferPointer const readerPointer) {
 	/* TO_DO: Print the histogram */
 	for (int i = 0; i < Nchar; i++) {
 		if (readerPointer->histogram[i] > 0){
-			printf("B[%c]=%d%s, ", i, readerPointer->histogram[i]);
+			printf("B[%c]=%d, ", i, readerPointer->histogram[i]);
 			if ((i + 1) % 10 == 0) {
 				printf("\n");
 			}
 		}
 	}
+	printf("\n");
+
 }
 
 /*
