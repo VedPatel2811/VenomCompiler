@@ -176,65 +176,61 @@ BufferPointer readerAddchar(BufferPointer const readerPointer, char ch) {
 	/* TO_DO: Defensive programming */
 	if (!readerPointer || ch < 0 || ch >= Nchar)
 		return NULL;
-
 	if (readerPointer->flags & FUL_FLAG_MASK)
 		return NULL;
-		
+
 	/* TO_DO: Reset Realocation */
 	readerPointer->flags &= ~REL_FLAG_MASK;
+
 	/* TO_DO: Test the inclusion of chars */
 	if (readerPointer->position.wrte * (int)sizeof(char) < readerPointer->size) {
 		/* TO_DO: This buffer is NOT full */
-		readerPointer->content[readerPointer->position.wrte++] = ch;
-		readerPointer->histogram[ch]++;
-		return readerPointer;
-	} 
-	/* TO_DO: Reset Full flag */
-		
-	switch (readerPointer->mode) {
-	case MODE_FIXED:
-		// Cannot reallocate, set FUL flag and return NULL
-		readerPointer->flags |= FUL_FLAG_MASK;
-		return NULL;
-	case MODE_ADDIT:
-		/* TO_DO: Adjust new size */
-		newSize = readerPointer->size + readerPointer->increment;
+	}
+	else {
+		/* TO_DO: Reset Full flag */
+
+		switch (readerPointer->mode) {
+		case MODE_FIXED:
+			return NULL;
+		case MODE_ADDIT:
+			/* TO_DO: Adjust new size */
+			newSize = readerPointer->size + readerPointer->increment;
+			/* TO_DO: Defensive programming */
+			break;
+		case MODE_MULTI:
+			/* TO_DO: Adjust new size */
+			newSize = readerPointer->size * readerPointer->increment;
+			/* TO_DO: Defensive programming */
+			break;
+
+		default:
+			return NULL;
+		}
+		/* TO_DO: New reader allocation */
 		/* TO_DO: Defensive programming */
-		break;
-	case MODE_MULTI:
-		/* TO_DO: Adjust new size */
-		newSize = readerPointer->size * readerPointer->increment;
-		/* TO_DO: Defensive programming */
-		break;
+		/* TO_DO: Check Relocation */
+		if (newSize <= 0 || newSize > READER_MAX_SIZE) {
+			readerPointer->flags |= FUL_FLAG_MASK;
+			return NULL;
+		}
+		tempReader = (string)realloc(readerPointer->content, newSize);
 
-	default:
-		return NULL;
-	}
-	/* TO_DO: New reader allocation */
-	/* TO_DO: Defensive programming */
-	/* TO_DO: Check Relocation */
-	if (newSize <= 0 || newSize > READER_MAX_SIZE) {
-		readerPointer->flags |= FUL_FLAG_MASK;
-		return NULL;
-	}
-	tempReader = (string)realloc(readerPointer->content, newSize);
+		if (!tempReader) {
+			return NULL;
+		}
 
-	if (!tempReader) {
-	// Reallocation failed, return NULL
-	return NULL;
+		// Check if the memory address has changed
+		if (tempReader != readerPointer->content) {
+			readerPointer->flags |= REL_FLAG_MASK;
+		}
+		readerPointer->content = tempReader;
+		readerPointer->size = newSize;
 	}
 
-	// Check if the memory address has changed
-	if (tempReader != readerPointer->content) {
-		readerPointer->flags |= REL_FLAG_MASK;
-	}
-	readerPointer->content = tempReader;
-	readerPointer->size = newSize;
-	
 	/* TO_DO: Add the char */
 	readerPointer->content[readerPointer->position.wrte++] = ch;
-	readerPointer->histogram[ch]++;
 	/* TO_DO: Updates histogram */
+	readerPointer->histogram[ch]++;
 	return readerPointer;
 }
 
@@ -282,7 +278,7 @@ Bool readerFree(BufferPointer const readerPointer) {
 	if (!readerPointer)
 		return False;
 	/* TO_DO: Free pointers */
-	free(readerPointer->content);
+	readerPointer->content = NULL;
 	free(readerPointer);
 	return True;
 }
@@ -752,13 +748,23 @@ void readerPrintStat(BufferPointer const readerPointer) {
 	if (!readerPointer)
 		return;
 	/* TO_DO: Print the histogram */
+	int index = 0; 
 	for (int i = 0; i < Nchar; i++) {
 		if (readerPointer->histogram[i] > 0){
-			printf("B[%c]=%d, ", i, readerPointer->histogram[i]);
-			if ((i + 1) % 10 == 0) {
+			if (i == '\n') {
+				printf("B[ ]=%d, ", readerPointer->histogram[i]);
+				index++;
+			}
+			else {
+				printf("B[%c]=%d, ", i, readerPointer->histogram[i]);
+				index++;
+			}
+			if ((index) % 10 == 0) {
 				printf("\n");
+				
 			}
 		}
+		
 	}
 	printf("\n");
 
@@ -783,7 +789,7 @@ int readerNumErrors(BufferPointer const readerPointer) {
 		return READER_ERROR;
 	/* TO_DO: Returns the number of errors */
 	int errorCount = 0;
-	for (int i = Nchar; i < 256; i++) {
+	for (int i = 0; i < Nchar; i++) {
 		if (readerPointer->histogram[i] > 0) {
 			errorCount += readerPointer->histogram[i];
 		}
