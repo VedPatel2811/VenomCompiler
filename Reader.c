@@ -141,11 +141,10 @@ BufferPointer readerCreate(int size, int increment, int mode) {
 	readerPointer->increment = increment;
 	readerPointer->mode = mode;
 	/* TO_DO: Initialize flags */
-	readerPointer->flags = READER_DEFAULT_FLAG; // Set all flags to default
+	readerPointer->flags = READER_DEFAULT_FLAG; 
 
 	/* TO_DO: The created flag must be signalized as EMP */
-	readerPointer->flags = readerPointer->flags || EMP_FLAG_MASK; // Set the EMP flag
-	/* NEW: Cleaning the content */
+	readerPointer->flags = readerPointer->flags || EMP_FLAG_MASK;
 	if (readerPointer->content)
 		readerPointer->content[0] = READER_TERMINATOR;
 
@@ -217,19 +216,18 @@ BufferPointer readerAddchar(BufferPointer const readerPointer, char ch) {
 			return NULL;
 		}
 		/* TO_DO: New reader allocation */
-		/* TO_DO: Defensive programming */
-		/* TO_DO: Check Relocation */
 		if (newSize <= 0 || newSize > READER_MAX_SIZE) {
 			readerPointer->flags = readerPointer->flags|| FUL_FLAG_MASK;
 			return NULL;
 		}
 		tempReader = (string)realloc(readerPointer->content, newSize);
 
-		if (!tempReader) {
+		/* TO_DO: Defensive programming */
+		if (!tempReader)
 			return NULL;
-		}
 
-		// Check if the memory address has changed
+
+		/* TO_DO: Check Relocation */
 		if (tempReader != readerPointer->content) {
 			readerPointer->flags = readerPointer->flags|| REL_FLAG_MASK;
 		}
@@ -312,7 +310,7 @@ Bool readerIsFull(BufferPointer const readerPointer) {
 	if (!readerPointer)
 		return False;
 	/* TO_DO: Check flag if buffer is FUL */
-	if (readerPointer->flags & FUL_FLAG_MASK) // Check if the FUL flag in the flags field is set
+	if (readerPointer->flags & FUL_FLAG_MASK)
 		return True;
 	return False;
 }
@@ -384,22 +382,13 @@ Bool readerSetMark(BufferPointer const readerPointer, int mark) {
 *	- Adjust for your LANGUAGE.
 *************************************************************
 */
-int readerPrint(BufferPointer const readerPointer) {///////////////////////////////////////////////////////////////////////
+int readerPrint(BufferPointer const readerPointer) {
 	int cont = 0;
 	char c;
 	/* TO_DO: Defensive programming (including invalid chars) */
 	if (!readerPointer)
 		return 0;
-	
-	/* TO_DO: Check flag if buffer EOB has achieved */
-	/*while (cont < readerPointer->position.wrte) {
-		//if (c == READER_TERMINATOR)
-			//break;
 
-		printf("%c", c);
-		c = readerGetchar(readerPointer);
-		cont++;
-	}*/
 	c = readerGetchar(readerPointer);
 	while (cont < readerPointer->position.wrte) {
 		printf("%c", c);
@@ -441,7 +430,6 @@ int readerLoad(BufferPointer const readerPointer, FILE* const fileDescriptor) {
 		c = (char)fgetc(fileDescriptor);
 		size++;
 	}
-	/* TO_DO: Defensive programming */
 	return size;
 }
 
@@ -547,11 +535,6 @@ char readerGetchar(BufferPointer const readerPointer) {
 		readerPointer->flags = readerPointer->flags & !END_FLAG_MASK;
 		return readerPointer->content[readerPointer->position.read++];
 	}
-	/* TO_DO: Set EOB flag */
-	/* TO_DO: Reset EOB flag */
-	/*if (readerPointer->position.wrte>0)
-		return readerPointer->content[readerPointer->position.read++];
-	return READER_TERMINATOR;*/
 }
 
 
