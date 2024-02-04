@@ -32,7 +32,7 @@
 |   :!Y5G / __| ___ / _(_)__ _ PGP5.    |
 |    :~75 \__ \/ _ \  _| / _` | 5?.     |
 |     7~7 |___/\___/_| |_\__,_| Y5?.    |
-|    .^~!~.....................P5YY7.   |
+|    .^~! .....................P5YY7.   |
 |   .:::::::::::::?JJJJYYYYYYYYYJJJJ7.  |
 |                                       |
 =---------------------------------------=
@@ -93,6 +93,7 @@ BufferPointer readerCreate(int size, int increment, int mode) {
 	/* TO_DO: Defensive programming */
 	if (size <= 0)
 		size = READER_DEFAULT_SIZE;
+
 	if (increment <= 0) {
 		increment = READER_DEFAULT_INCREMENT;
 		mode = MODE_FIXED;
@@ -125,6 +126,7 @@ BufferPointer readerCreate(int size, int increment, int mode) {
 	readerPointer = (BufferPointer)calloc(1, sizeof(Buffer));
 	if (!readerPointer)
 		return NULL;
+
 	readerPointer->content = (string)malloc(size);
 	/* TO_DO: Defensive programming */
 	if (!readerPointer->content) {
@@ -142,10 +144,11 @@ BufferPointer readerCreate(int size, int increment, int mode) {
 	readerPointer->flags = READER_DEFAULT_FLAG; // Set all flags to default
 
 	/* TO_DO: The created flag must be signalized as EMP */
-	readerPointer->flags |= EMP_FLAG_MASK; // Set the EMP flag
+	readerPointer->flags = readerPointer->flags || EMP_FLAG_MASK; // Set the EMP flag
 	/* NEW: Cleaning the content */
 	if (readerPointer->content)
 		readerPointer->content[0] = READER_TERMINATOR;
+
 	readerPointer->position.wrte = 0;
 	readerPointer->position.mark = 0;
 	readerPointer->position.read = 0;
@@ -174,13 +177,11 @@ BufferPointer readerAddchar(BufferPointer const readerPointer, char ch) {
 	int newSize = 0;
 
 	/* TO_DO: Defensive programming */
-	if (!readerPointer || ch < 0 || ch >= Nchar)
-		return NULL;
-	if (readerPointer->flags & FUL_FLAG_MASK)
+	if (!readerPointer || ch < 0 || ch > Nchar)
 		return NULL;
 
 	/* TO_DO: Reset Realocation */
-	readerPointer->flags &= ~REL_FLAG_MASK;
+	readerPointer->flags = readerPointer->flags & !REL_FLAG_MASK;
 
 	/* TO_DO: Test the inclusion of chars */
 	if (readerPointer->position.wrte * (int)sizeof(char) < readerPointer->size) {
@@ -188,6 +189,7 @@ BufferPointer readerAddchar(BufferPointer const readerPointer, char ch) {
 	}
 	else {
 		/* TO_DO: Reset Full flag */
+		readerPointer->flags = readerPointer->flags & REL_FLAG_MASK;
 
 		switch (readerPointer->mode) {
 		case MODE_FIXED:
@@ -196,11 +198,19 @@ BufferPointer readerAddchar(BufferPointer const readerPointer, char ch) {
 			/* TO_DO: Adjust new size */
 			newSize = readerPointer->size + readerPointer->increment;
 			/* TO_DO: Defensive programming */
+			if (newSize <= 0 || newSize > READER_MAX_SIZE) {
+				readerPointer->flags = readerPointer->flags || FUL_FLAG_MASK;
+				return NULL;
+			}
 			break;
 		case MODE_MULTI:
 			/* TO_DO: Adjust new size */
 			newSize = readerPointer->size * readerPointer->increment;
 			/* TO_DO: Defensive programming */
+			if (newSize <= 0 || newSize > READER_MAX_SIZE) {
+				readerPointer->flags = readerPointer->flags || FUL_FLAG_MASK;
+				return NULL;
+			}
 			break;
 
 		default:
@@ -210,7 +220,7 @@ BufferPointer readerAddchar(BufferPointer const readerPointer, char ch) {
 		/* TO_DO: Defensive programming */
 		/* TO_DO: Check Relocation */
 		if (newSize <= 0 || newSize > READER_MAX_SIZE) {
-			readerPointer->flags |= FUL_FLAG_MASK;
+			readerPointer->flags = readerPointer->flags|| FUL_FLAG_MASK;
 			return NULL;
 		}
 		tempReader = (string)realloc(readerPointer->content, newSize);
@@ -221,7 +231,7 @@ BufferPointer readerAddchar(BufferPointer const readerPointer, char ch) {
 
 		// Check if the memory address has changed
 		if (tempReader != readerPointer->content) {
-			readerPointer->flags |= REL_FLAG_MASK;
+			readerPointer->flags = readerPointer->flags|| REL_FLAG_MASK;
 		}
 		readerPointer->content = tempReader;
 		readerPointer->size = newSize;
@@ -423,7 +433,6 @@ int readerLoad(BufferPointer const readerPointer, FILE* const fileDescriptor) {
 		return READER_ERROR;
 
 	c = (char)fgetc(fileDescriptor);
-
 	while (!feof(fileDescriptor)) {
 		if (!readerAddchar(readerPointer, c)) {
 			ungetc(c, fileDescriptor);
@@ -531,11 +540,11 @@ char readerGetchar(BufferPointer const readerPointer) {
 		return READER_TERMINATOR;
 	/* TO_DO: Check condition to read/wrte */
 	if (readerPointer->position.read == readerPointer->position.wrte) {
-		readerPointer->flags |= END_FLAG_MASK;
+		readerPointer->flags = readerPointer->flags || END_FLAG_MASK;
 		return READER_TERMINATOR;
 	}
 	else {
-		readerPointer->flags &= ~END_FLAG_MASK;
+		readerPointer->flags = readerPointer->flags & !END_FLAG_MASK;
 		return readerPointer->content[readerPointer->position.read++];
 	}
 	/* TO_DO: Set EOB flag */
@@ -790,9 +799,10 @@ int readerNumErrors(BufferPointer const readerPointer) {
 	/* TO_DO: Returns the number of errors */
 	int errorCount = 0;
 	for (int i = 0; i < Nchar; i++) {
-		if (readerPointer->histogram[i] > 0) {
+		if (i < 0 || i >= Nchar) {
 			errorCount += readerPointer->histogram[i];
 		}
-		return errorCount;
+		
 	}
+	return errorCount;
 }
