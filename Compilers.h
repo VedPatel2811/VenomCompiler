@@ -91,7 +91,7 @@ typedef char*			string;
 typedef unsigned char	Bool;
 typedef unsigned char	byte;
 
-typedef long			long;
+//typedef long			long;
 //typedef double		double;
 
 /*
@@ -116,10 +116,11 @@ Main functions signatures
 */
 int mainReader(int argc, string* argv);
 
+
 /* 
 TO_DO: Include later mainScaner (A22) and mainParser (A32)
 */
-//int mainScanner(int args, string* argv);
+int mainScanner(int args, string* argv);
 //int mainParser(int args, string* argv);
 void printLogo();
 

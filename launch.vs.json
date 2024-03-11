@@ -8,8 +8,8 @@
       "projectTarget": "VenomCompiler.exe",
       "name": "VenomCompiler.exe",
       "args": [
-        "r",
-        "INPUT6_Big.ven"
+        "s",
+        "INPUT1_Hello.ven"
       ]
     }
   ]
