@@ -73,7 +73,7 @@
 #define RTE_CODE 1  /* Value for run-time error */
 
 /* TO_DO: Define the number of tokens */
-#define NUM_TOKENS 13
+#define NUM_TOKENS 23
 
 /* TO_DO: Define Token codes - Create your token classes */
 enum TOKENS {
@@ -89,7 +89,17 @@ enum TOKENS {
 	EOS_T,		/*  9: End of statement (semicolon) */
 	RTE_T,		/* 10: Run-time error token */
 	SEOF_T,		/* 11: Source end-of-file token */
-	CMT_T		/* 12: Comment token */
+	CMT_T,		/* 12: Comment token */
+	CMT2_T,		/* 13: Multiline Comment*/
+	INP_T,		/* 14: Input function token */
+	ASN_T,		/* 15: Assignment operator token */
+	PRINT_T,	/* 16: Print function token */
+	COL_T,		/* 17: Colon token */
+	OR_T,		/* 18: Logical OR operator token */
+	EQ_T,		/* 19: Equality operator token */
+	NEQ_T,		/* 20: Not equal to operator token */
+	INC_T,		/* 21: Increment operator token */
+	MLSTR_T		/* 22: Multi-line string literal token */
 };
 
 /* TO_DO: Define the list of keywords */
@@ -106,7 +116,17 @@ static string tokenStrTable[NUM_TOKENS] = {
 	"EOS_T",
 	"RTE_T",
 	"SEOF_T",
-	"CMT_T"
+	"CMT_T",
+	"CMT2_T",
+	"INP_T",
+	"ASN_T",
+	"PRINT_T",
+	"COL_T",
+	"OR_T",
+	"EQ_T",
+	"NEQ_T",
+	"INC_T",
+	"MLSTR_T"
 };
 
 /* TO_DO: Operators token attributes */
@@ -165,7 +185,7 @@ typedef struct scannerData {
 /* These constants will be used on nextClass */
 #define CHRCOL2 '_'
 #define CHRCOL3 '&'
-#define CHRCOL4 '\''
+#define CHRCOL4 '\n'
 #define CHRCOL6 '#'
 
 /* These constants will be used on VID / MID function */
@@ -183,7 +203,7 @@ typedef struct scannerData {
 
 /* TO_DO: Transition table - type of states defined in separate table */
 static int transitionTable[NUM_STATES][CHAR_CLASSES] = {
-/*    [A-z],[0-9],    _,    &,   \', SEOF,    #, other
+/*    [A-z],[0-9],    _,    &,   \n', SEOF,   #, other
 	   L(0), D(1), U(2), M(3), Q(4), E(5), C(6),  O(7) */
 	{     1, ESNR, ESNR, ESNR,    4, ESWR,	  6, ESNR},	// S0: NOAS
 	{     1,    1,    1,    2,	  3,    3,   3,    3},	// S1: NOAS
@@ -191,7 +211,7 @@ static int transitionTable[NUM_STATES][CHAR_CLASSES] = {
 	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS},	// S3: ASWR (KEY)
 	{     4,    4,    4,    4,    5, ESWR,	  4,    4},	// S4: NOAS
 	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS},	// S5: ASNR (SL)
-	{     6,    6,    6,    6,    6, ESWR,	  7,    6},	// S6: NOAS
+	{     6,    6,    6,    6,    7,    7,	  7,    6},	// S6: NOAS
 	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS},	// S7: ASNR (COM)
 	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS},	// S8: ASNR (ES)
 	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS}  // S9: ASWR (ER)
@@ -272,20 +292,23 @@ Language keywords
 */
 
 /* TO_DO: Define the number of Keywords from the language */
-#define KWT_SIZE 10
+#define KWT_SIZE 13
 
 /* TO_DO: Define the list of keywords */
 static string keywordTable[KWT_SIZE] = {
-	"data",		/* KW00 */
-	"code",		/* KW01 */
+	"func",		/* KW00 */ //data
+	"long",		/* KW01 */ //code
 	"int",		/* KW02 */
-	"real",		/* KW03 */
+	"float",	/* KW03 */ //real
 	"string",	/* KW04 */
 	"if",		/* KW05 */
-	"then",		/* KW06 */
+	"elif",	    /* KW06 */ //then
 	"else",		/* KW07 */
 	"while",	/* KW08 */
-	"do"		/* KW09 */
+	"do",		/* KW09 */
+	"double",	/* KW10 */
+	"for",		/* KW11 */
+	"import"	/* KW12 */
 };
 
 /* NEW SECTION: About indentation */
