@@ -188,12 +188,13 @@ typedef struct scannerData {
 #define CHRCOL2 '_'
 #define CHRCOL3 '\"'
 #define CHRCOL4 '\n'
-#define CHRCOL6 '#'
+#define CHRCOL6 '##'
 #define CHRCOL7 '\''
+#define CHRCOL8 '#'
 
 /* These constants will be used on VID / MID function */
 #define MNID_SUF '('
-#define COMM_SYM '#'
+#define COMM_SYM '##'
 
 /* TO_DO: Error states and illegal state */
 #define ESNR	8		/* Error state with no retract */
@@ -202,22 +203,22 @@ typedef struct scannerData {
 
  /* TO_DO: State transition table definition */
 #define NUM_STATES		10
-#define CHAR_CLASSES	10
+#define CHAR_CLASSES	11
 
 /* TO_DO: Transition table - type of states defined in separate table */
 static int transitionTable[NUM_STATES][CHAR_CLASSES] = {
-/*    [A-z],[0-9],    _,   \",   \n', SEOF,   #,	(,	\'		other	
-	   L(0), D(1), U(2), M(3), Q(4), E(5), C(6), O(7),	O(8)	O(9)	*/
-	{     1, ESNR, ESNR,	4,    4, ESWR,	  6, ESNR,	 4,		ESNR},	// S0: NOAS
-	{     1,    1,    1,    3,	  3,    3,	  3,	2,	 3,		3},	// S1: NOAS
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS},	// S2: ASNR (MVID)
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS},	// S3: ASWR (KEY)
-	{     4,    4,    4,    5,    5, ESWR,	  4,	4,	 5,		4},	// S4: NOAS
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS},	// S5: ASNR (SL)
-	{     6,    6,    6,    6,    7,    7,	  7,	6,	 6,		6},	// S6: NOAS
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS},	// S7: ASNR (COM)
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS},	// S8: ASNR (ES)
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS}  // S9: ASWR (ER)
+/*    [A-z],[0-9],    _,   \",   \n', SEOF,   #,	(,	\'		other	##	
+	   L(0), D(1), U(2), M(3), Q(4), E(5), C(6), O(7),	O(8)	O(9)	O(10)	*/
+	{     1, ESNR, ESNR,	4,    4, ESWR,	  6, ESNR,	 4,		ESNR,	6},	// S0: NOAS
+	{     1,    1,    1,    3,	  3,    3,	  3,	2,	 3,		3,		3},	// S1: NOAS
+	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},	// S2: ASNR (MVID)
+	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},	// S3: ASWR (KEY)
+	{     4,    4,    4,    5,    5, ESWR,	  4,	4,	 5,		4,		4},	// S4: NOAS
+	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},	// S5: ASNR (SL)
+	{     6,    6,    6,    6,    7,    7,	  7,	6,	 6,		6,		7},	// S6: NOAS
+	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},	// S7: ASNR (COM)
+	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},	// S8: ASNR (ES)
+	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS}  // S9: ASWR (ER)
 };
 
 /* Define accepting states types */

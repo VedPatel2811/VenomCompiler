@@ -298,8 +298,8 @@ int nextState(int state, char c) {
 /* TO_DO: Use your column configuration */
 
 /* Adjust the logic to return next column in TT */
-/*    [A-z],[0-9],    _,    &,   \', SEOF,    #, other
-	   L(0), D(1), U(2), M(3), Q(4), E(5), C(6),  O(7) */
+/*    [A-z],[0-9],    _,   \",   \n', SEOF,   #,	(,	\'		other	##
+	   L(0), D(1), U(2), M(3), Q(4), E(5), C(6), O(7),	O(8)	O(9)	O(10)	*/
 
 int nextClass(char c) {
 	int val = -1;
@@ -314,10 +314,13 @@ int nextClass(char c) {
 		val = 4;
 		break;
 	case CHRCOL6:
-		val = 6;
+		val = 10;
 		break;
 	case CHRCOL7:
 		val = 8;
+		break;
+	case CHRCOL8:
+		val = 6;
 		break;
 	case CHARSEOF0:
 	case CHARSEOF255:
@@ -406,7 +409,7 @@ Token funcIL(string lexeme) {
 Token funcID(string lexeme) {
 	Token currentToken = { 0 };
 	size_t length = strlen(lexeme);
-	char lastch = lexeme[length-1];
+	char lastch = lexeme[length];
 	int isID = False;
 	switch (lastch) {
 		case MNID_SUF:
@@ -416,7 +419,7 @@ Token funcID(string lexeme) {
 			break;
 		default:
 			// Test Keyword
-			lexeme[length-1] = '\0';
+			lexeme[length] = '\0';
 			currentToken = funcKEY(lexeme);
 			break;
 	}
@@ -480,7 +483,7 @@ Token funcKEY(string lexeme) {
 	Token currentToken = { 0 };
 	int kwindex = -1, j = 0;
 	int len = (int)strlen(lexeme);
-	lexeme[len -1] = '\0';
+	lexeme[len] = '\0';// made a change to get the full keyword
 	for (j = 0; j < KWT_SIZE; j++)
 		if (!strcmp(lexeme, &keywordTable[j][0]))
 			kwindex = j;
