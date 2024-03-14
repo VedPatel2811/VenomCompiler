@@ -210,7 +210,7 @@ Token tokenizer(void) {
 		*/
 
 		/* TO_DO: Adjust / check the logic for your language */
-
+		
 		default: // general case
 			state = nextState(state, c);
 			lexStart = readerGetPosRead(sourceBuffer) - 1;

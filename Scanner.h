@@ -73,7 +73,7 @@
 #define RTE_CODE 1  /* Value for run-time error */
 
 /* TO_DO: Define the number of tokens */
-#define NUM_TOKENS 23
+#define NUM_TOKENS 24
 
 /* TO_DO: Define Token codes - Create your token classes */
 enum TOKENS {
@@ -99,7 +99,8 @@ enum TOKENS {
 	EQ_T,		/* 19: Equality operator token */
 	NEQ_T,		/* 20: Not equal to operator token */
 	INC_T,		/* 21: Increment operator token */
-	MLSTR_T		/* 22: Multi-line string literal token */
+	MLSTR_T,	/* 22: Multi-line string literal token */
+	DQT_T		/* 23: Double quote token */
 };
 
 /* TO_DO: Define the list of keywords */
@@ -126,7 +127,8 @@ static string tokenStrTable[NUM_TOKENS] = {
 	"EQ_T",
 	"NEQ_T",
 	"INC_T",
-	"MLSTR_T"
+	"MLSTR_T",
+	"DQT_T"
 };
 
 /* TO_DO: Operators token attributes */
@@ -292,7 +294,7 @@ Language keywords
 */
 
 /* TO_DO: Define the number of Keywords from the language */
-#define KWT_SIZE 13
+#define KWT_SIZE 14
 
 /* TO_DO: Define the list of keywords */
 static string keywordTable[KWT_SIZE] = {
@@ -308,7 +310,8 @@ static string keywordTable[KWT_SIZE] = {
 	"do",		/* KW09 */
 	"double",	/* KW10 */
 	"for",		/* KW11 */
-	"import"	/* KW12 */
+	"import",	/* KW12 */
+	"print"		/* KW13 */
 };
 
 /* NEW SECTION: About indentation */
