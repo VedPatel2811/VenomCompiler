@@ -171,10 +171,10 @@ Token tokenizer(void) {
 			break;
 
 		/* Cases for symbols */
-		case ';':
+		/*case ';':
 			currentToken.code = EOS_T;
 			scData.scanHistogram[currentToken.code]++;
-			return currentToken;
+			return currentToken;*/
 		case '(':
 			currentToken.code = LPR_T;
 			scData.scanHistogram[currentToken.code]++;
@@ -213,7 +213,7 @@ Token tokenizer(void) {
 		
 		default: // general case
 			state = nextState(state, c);
-			lexStart = readerGetPosRead(sourceBuffer) - 1;
+			lexStart = readerGetPosRead(sourceBuffer) -1;
 			readerSetMark(sourceBuffer, lexStart);
 			int pos = 0;
 			while (stateType[state] == NOFS) {
@@ -316,6 +316,9 @@ int nextClass(char c) {
 	case CHRCOL6:
 		val = 6;
 		break;
+	case CHRCOL7:
+		val = 8;
+		break;
 	case CHARSEOF0:
 	case CHARSEOF255:
 		val = 5;
@@ -326,7 +329,7 @@ int nextClass(char c) {
 		else if (isdigit(c))
 			val = 1;
 		else
-			val = 7;
+			val = 9;
 	}
 	return val;
 }
@@ -403,7 +406,7 @@ Token funcIL(string lexeme) {
 Token funcID(string lexeme) {
 	Token currentToken = { 0 };
 	size_t length = strlen(lexeme);
-	char lastch = lexeme[length - 1];
+	char lastch = lexeme[length-1];
 	int isID = False;
 	switch (lastch) {
 		case MNID_SUF:
@@ -413,7 +416,7 @@ Token funcID(string lexeme) {
 			break;
 		default:
 			// Test Keyword
-			lexeme[length - 1] = '\0';
+			lexeme[length-1] = '\0';
 			currentToken = funcKEY(lexeme);
 			break;
 	}
@@ -477,7 +480,7 @@ Token funcKEY(string lexeme) {
 	Token currentToken = { 0 };
 	int kwindex = -1, j = 0;
 	int len = (int)strlen(lexeme);
-	lexeme[len - 1] = '\0';
+	lexeme[len -1] = '\0';
 	for (j = 0; j < KWT_SIZE; j++)
 		if (!strcmp(lexeme, &keywordTable[j][0]))
 			kwindex = j;
