@@ -298,8 +298,8 @@ int nextState(int state, char c) {
 /* TO_DO: Use your column configuration */
 
 /* Adjust the logic to return next column in TT */
-/*    [A-z],[0-9],    _,   \",   \n', SEOF,   #,	(,	\'		other	##
-	   L(0), D(1), U(2), M(3), Q(4), E(5), C(6), O(7),	O(8)	O(9)	O(10)	*/
+/*    [A-z],[0-9],    _,   \",   \n', SEOF,   #,	(,	\'		other
+	   L(0), D(1), U(2), M(3), Q(4), E(5), C(6), O(7),	O(8)	O(9)		*/s
 
 int nextClass(char c) {
 	int val = -1;

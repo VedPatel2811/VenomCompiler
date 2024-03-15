@@ -193,7 +193,7 @@ typedef struct scannerData {
 
 /* These constants will be used on VID / MID function */
 #define MNID_SUF '('
-#define COMM_SYM '##'
+#define COMM_SYM '#'
 
 /* TO_DO: Error states and illegal state */
 #define ESNR	8		/* Error state with no retract */
