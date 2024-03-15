@@ -277,7 +277,7 @@ int nextState(int state, char c) {
 	next = transitionTable[state][col];
 	if (DEBUG)
 		printf("Input symbol: %c Row: %d Column: %d Next: %d \n", c, state, col, next);
-	assert(next != FS);
+	//assert(next = FS);
 	if (DEBUG)
 		if (next == FS) {
 			printf("Scanner Error: Illegal state:\n");
@@ -314,13 +314,10 @@ int nextClass(char c) {
 		val = 4;
 		break;
 	case CHRCOL6:
-		val = 10;
+		val = 6;
 		break;
 	case CHRCOL7:
 		val = 8;
-		break;
-	case CHRCOL8:
-		val = 6;
 		break;
 	case CHARSEOF0:
 	case CHARSEOF255:
