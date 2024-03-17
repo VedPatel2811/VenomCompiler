@@ -73,7 +73,7 @@
 #define RTE_CODE 1  /* Value for run-time error */
 
 /* TO_DO: Define the number of tokens */
-#define NUM_TOKENS 24
+#define NUM_TOKENS 25
 
 /* TO_DO: Define Token codes - Create your token classes */
 enum TOKENS {
@@ -100,7 +100,8 @@ enum TOKENS {
 	NEQ_T,		/* 20: Not equal to operator token */
 	INC_T,		/* 21: Increment operator token */
 	MLSTR_T,	/* 22: Multi-line string literal token */
-	DQT_T		/* 23: Double quote token */
+	DQT_T,		/* 23: Double quote token */
+	VID_T		/* 24: Variable token */
 };
 
 /* TO_DO: Define the list of keywords */
@@ -128,7 +129,8 @@ static string tokenStrTable[NUM_TOKENS] = {
 	"NEQ_T",
 	"INC_T",
 	"MLSTR_T",
-	"DQT_T"
+	"DQT_T",
+	"VID_T"
 };
 
 /* TO_DO: Operators token attributes */
@@ -150,6 +152,7 @@ typedef union TokenAttribute {
 	float floatValue;				/* floating-point literal attribute (value) */
 	char idLexeme[VID_LEN + 1];	/* variable identifier token attribute */
 	char errLexeme[ERR_LEN + 1];	/* error token attribite */
+	char vidLexeme[VID_T + 1];
 } TokenAttribute;
 
 /* TO_DO: Should be used if no symbol table is implemented */
@@ -190,6 +193,7 @@ typedef struct scannerData {
 #define CHRCOL4 '\n'
 #define CHRCOL6 '#'
 #define CHRCOL7 '\''
+#define CHRCOL8 '\='
 
 /* These constants will be used on VID / MID function */
 #define MNID_SUF '('
@@ -201,23 +205,24 @@ typedef struct scannerData {
 #define FS		10		/* Illegal state */
 
  /* TO_DO: State transition table definition */
-#define NUM_STATES		10 //rows
-#define CHAR_CLASSES	10 //columns
+#define NUM_STATES		11 //rows
+#define CHAR_CLASSES	11 //columns
 
 /* TO_DO: Transition table - type of states defined in separate table */
 static int transitionTable[NUM_STATES][CHAR_CLASSES] = {
-/*    [A-z],[0-9],    _,   \",   \n', SEOF,   #,	(,	\'		other		
-	   L(0), D(1), U(2), M(3), Q(4), E(5), C(6), O(7),	O(8)	O(9)		*/
-	{     1, ESNR, ESNR,	4,    4, ESWR,	  6, ESNR,	 4,		ESNR},	// S0: NOAS
-	{     1,    1,    1,    3,	  3,    3,	  3,	3,	 3,		3},	// S1: NOAS
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS},	// S2: ASNR (MVID)
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS},	// S3: ASWR (KEY)
-	{     4,    4,    4,    5,    5, ESWR,	 4,		4,	 5,		4},	// S4: NOAS
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS},	// S5: ASNR (SL)
-	{     6,    6,    6,    6,    7,    7,	 7,		6,	 6,		6},	// S6: NOAS
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS},	// S7: ASNR (COM)
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS},	// S8: ASNR (ES)
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS},  // S9: ASWR (ER)
+/*    [A-z],[0-9],    _,   \",   \n', SEOF,   #,	(,	\'		other	=		
+	   L(0), D(1), U(2), M(3), Q(4), E(5), C(6), O(7),	O(8)	O(9)	O(10)	*/
+	{     1, ESNR, ESNR,	4,    4, ESWR,	  6, ESNR,	 4,		ESNR,	ESNR},	// S0: NOAS
+	{     1,    1,    1,    3,	  3,    3,	  3,	2,	 3,		  2,	10},	// S1: NOAS
+	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},	// S2: ASNR (MVID)
+	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},	// S3: ASWR (KEY)
+	{     4,    4,    4,    5,    5, ESWR,	 4,		4,	 5,		4,		4},	// S4: NOAS
+	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},	// S5: ASNR (SL)
+	{     6,    6,    6,    6,    7,    7,	 7,		6,	 6,		6,		6},	// S6: NOAS
+	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},	// S7: ASNR (COM)
+	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},	// S8: ASNR (ES)
+	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},  // S9: ASWR (ER)
+	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS}		// S10: ASNR(VID)
 };
 
 /* Define accepting states types */
@@ -237,6 +242,7 @@ static int stateType[NUM_STATES] = {
 	FSNR, /* 07 (COM) */
 	FSNR, /* 08 (Err1 - no retract) */
 	FSWR, /* 09 (Err2 - retract) */
+	FSNR  /* 10 (VID) */
 };
 
 /*
@@ -268,6 +274,7 @@ Token funcID	(string lexeme);
 Token funcCMT   (string lexeme);
 Token funcKEY	(string lexeme);
 Token funcErr	(string lexeme);
+Token funcVID	(string lexeme);
 
 /* 
  * Accepting function (action) callback table (array) definition 
@@ -276,16 +283,17 @@ Token funcErr	(string lexeme);
 
 /* TO_DO: Define final state table */
 static PTR_ACCFUN finalStateTable[NUM_STATES] = {
-	NULL,		/* -    [00] */
-	NULL,		/* -    [01] */
-	funcID,		/* MNID	[02] */
-	funcKEY,	/* KEY  [03] */
-	NULL,		/* -    [04] */
-	funcSL,		/* SL   [05] */
-	NULL,		/* -    [06] */
-	funcCMT,	/* COM  [07] */
-	funcErr,	/* ERR1 [06] */
-	funcErr,	/* ERR2 [07] */	
+	NULL,      /* -    [00] */
+	NULL,      /* -    [01] */
+	funcID,    /* MNID [02] */
+	funcKEY,   /* KEY  [03] */
+	NULL,      /* -    [04] */
+	funcSL,    /* SL   [05] */
+	NULL,      /* -    [06] */
+	funcCMT,   /* COM  [07] */
+	funcErr,   /* ERR1 [08] */
+	funcErr,   /* ERR2 [09] */
+	funcVID    /* VID  [10] */
 };
 
 /*

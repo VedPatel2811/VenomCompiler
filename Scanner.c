@@ -236,6 +236,9 @@ Token tokenizer(void) {
 			readerAddchar(lexemeBuffer, READER_TERMINATOR);
 			currentToken = (*finalStateTable[state])(readerGetContent(lexemeBuffer, 0));
 			readerRestore(lexemeBuffer); //xxx
+
+			
+
 			return currentToken;
 		} // switch
 
@@ -299,7 +302,7 @@ int nextState(int state, char c) {
 
 /* Adjust the logic to return next column in TT */
 /*    [A-z],[0-9],    _,   \",   \n', SEOF,   #,	(,	\'		other
-	   L(0), D(1), U(2), M(3), Q(4), E(5), C(6), O(7),	O(8)	O(9)		*/s
+	   L(0), D(1), U(2), M(3), Q(4), E(5), C(6), O(7),	O(8)	O(9)		*/
 
 int nextClass(char c) {
 	int val = -1;
@@ -318,6 +321,9 @@ int nextClass(char c) {
 		break;
 	case CHRCOL7:
 		val = 8;
+		break;
+	case CHRCOL8:
+		val = 10;
 		break;
 	case CHARSEOF0:
 	case CHARSEOF255:
@@ -406,7 +412,7 @@ Token funcIL(string lexeme) {
 Token funcID(string lexeme) {
 	Token currentToken = { 0 };
 	size_t length = strlen(lexeme);
-	char lastch = lexeme[length];
+	char lastch = lexeme[length-1];
 	int isID = False;
 	switch (lastch) {
 		case MNID_SUF:
@@ -609,3 +615,25 @@ void printScannerData(ScannerData scData) {
 /*
 TO_DO: (If necessary): HERE YOU WRITE YOUR ADDITIONAL FUNCTIONS (IF ANY).
 */
+/* Acceptance State Function VID */
+Token funcVID(string lexeme) {
+	Token currentToken = { 0 };
+	size_t length = strlen(lexeme);
+	char lastch = lexeme[length - 1];
+	int isVID = False;
+	switch (lastch) {
+	case CHRCOL8:
+		currentToken.code = VID_T;
+		scData.scanHistogram[currentToken.code]++;
+		isVID = True;
+		break;
+	default:
+		isVID = True;
+		break;
+	}
+	if (isVID == True) {
+		strncpy(currentToken.attribute.vidLexeme, lexeme, VID_LEN);
+		currentToken.attribute.vidLexeme[VID_LEN] = CHARSEOF0;
+	}
+	return currentToken;
+}
