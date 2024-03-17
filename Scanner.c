@@ -323,7 +323,7 @@ int nextClass(char c) {
 		val = 8;
 		break;
 	case CHRCOL8:
-		val = 10;
+		val = 9;
 		break;
 	case CHARSEOF0:
 	case CHARSEOF255:
@@ -335,7 +335,7 @@ int nextClass(char c) {
 		else if (isdigit(c))
 			val = 1;
 		else
-			val = 9;
+			val = 10;
 	}
 	return val;
 }
@@ -427,8 +427,10 @@ Token funcID(string lexeme) {
 			break;
 	}
 	if (isID == True) {
+		
 		strncpy(currentToken.attribute.idLexeme, lexeme, VID_LEN);
 		currentToken.attribute.idLexeme[VID_LEN] = CHARSEOF0;
+
 	}
 	return currentToken;
 }
@@ -496,7 +498,7 @@ Token funcKEY(string lexeme) {
 		currentToken.attribute.codeType = kwindex;
 	}
 	else {
-		currentToken = funcErr(lexeme);
+		currentToken = funcVID(lexeme);
 	}
 	return currentToken;
 }
@@ -628,7 +630,7 @@ Token funcVID(string lexeme) {
 		isVID = True;
 		break;
 	default:
-		isVID = True;
+		currentToken = funcErr(lexeme);
 		break;
 	}
 	if (isVID == True) {
