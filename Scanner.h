@@ -90,8 +90,8 @@ enum TOKENS {
 	RTE_T,		/* 10: Run-time error token */
 	SEOF_T,		/* 11: Source end-of-file token */
 	CMT_T,		/* 12: Comment token */
-	CMT2_T,		/* 13: Multiline Comment*/
-	INP_T,		/* 14: Input function token */
+	DIV_T,		/* 13: Divide token*/
+	MULT_T,		/* 14: Multiplying token */
 	ASN_T,		/* 15: Assignment operator token */
 	PRINT_T,	/* 16: Print function token */
 	COL_T,		/* 17: Colon token */
@@ -119,8 +119,8 @@ static string tokenStrTable[NUM_TOKENS] = {
 	"RTE_T",
 	"SEOF_T",
 	"CMT_T",
-	"CMT2_T",
-	"INP_T",
+	"DIV_T",
+	"MULT_T",
 	"ASN_T",
 	"PRINT_T",
 	"COL_T",

@@ -191,6 +191,19 @@ Token tokenizer(void) {
 			currentToken.code = RBR_T;
 			scData.scanHistogram[currentToken.code]++;
 			return currentToken;
+		case '=':
+			currentToken.code = EQ_T;
+			scData.scanHistogram[currentToken.code]++;
+			return currentToken;
+		case '*':
+			currentToken.code = MULT_T;
+			scData.scanHistogram[currentToken.code]++;
+			return currentToken;
+		case '/':
+			currentToken.code = DIV_T;
+			scData.scanHistogram[currentToken.code]++;
+			return currentToken;
+
 			/* Cases for END OF FILE */
 		case CHARSEOF0:
 			currentToken.code = SEOF_T;
@@ -590,6 +603,15 @@ void printToken(Token t) {
 		break;
 	case VID_T:
 		printf("VID_T\t\t%s\n", t.attribute.vidLexeme);
+		break;
+	case EQ_T:
+		printf("EQ_T\t\t=\n");
+		break;
+	case MULT_T:
+		printf("MULT_T\t\t*\n");
+		break;
+	case DIV_T:
+		printf("DIV_T\t\t/\n");
 		break;
 	default:
 		printf("Scanner error: invalid token code: %d\n", t.code);
