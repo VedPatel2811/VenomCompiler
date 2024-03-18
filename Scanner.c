@@ -236,6 +236,9 @@ Token tokenizer(void) {
 			readerAddchar(lexemeBuffer, READER_TERMINATOR);
 			currentToken = (*finalStateTable[state])(readerGetContent(lexemeBuffer, 0));
 			readerRestore(lexemeBuffer); //xxx
+
+
+
 			return currentToken;
 		} // switch
 
@@ -625,12 +628,12 @@ Token funcVID(string lexeme) {
 	lexeme[length - 1] = '\0';
 	currentToken.code = VID_T;
 	scData.scanHistogram[currentToken.code]++;
-		
+
 	readerRetract(sourceBuffer);
-	
-	
+
+
 	strncpy(currentToken.attribute.vidLexeme, lexeme, VID_LEN);
 	currentToken.attribute.vidLexeme[VID_LEN] = CHARSEOF0;
-	
+
 	return currentToken;
 }
