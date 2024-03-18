@@ -186,8 +186,8 @@ typedef struct scannerData {
 /*  Special case tokens processed separately one by one in the token-driven part of the scanner:
  *  LPR_T, RPR_T, LBR_T, RBR_T, EOS_T, SEOF_T and special chars used for tokenis include _, & and ' */
 
-/* TO_DO: Define lexeme FIXED classes */
-/* These constants will be used on nextClass */
+ /* TO_DO: Define lexeme FIXED classes */
+ /* These constants will be used on nextClass */
 #define CHRCOL2 '_'
 #define CHRCOL3 '\"'
 #define CHRCOL4 '\n'
@@ -205,23 +205,24 @@ typedef struct scannerData {
 #define FS		10		/* Illegal state */
 
  /* TO_DO: State transition table definition */
-#define NUM_STATES		10 //rows
+#define NUM_STATES		11 //rows
 #define CHAR_CLASSES	11 //columns
 
 /* TO_DO: Transition table - type of states defined in separate table */
 static int transitionTable[NUM_STATES][CHAR_CLASSES] = {
-/*    [A-z],[0-9],    _,   \",   \n', SEOF,   #,	(	\'		=		other	
-	   L(0), D(1), U(2), M(3), Q(4), E(5), C(6), O(7),	O(8)	O(9)	O(10)	*/
-	{     1, ESNR, ESNR,	4,    4, ESWR,	  6, ESNR,	 4,		ESNR, ESNR},	// S0: NOAS
-	{     1,    1,    1,    3,	  3,    3,	  3,	2,	 3,		  3,	3},	// S1: NOAS
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},	// S2: ASNR (MVID)
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},	// S3: ASWR (KEY)
-	{     4,    4,    4,    5,    5, ESWR,	 4,		4,	 5,		4,		4},	// S4: NOAS
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},	// S5: ASNR (SL)
-	{     6,    6,    6,    6,    7,    7,	 7,		6,	 6,		6,		6},	// S6: NOAS
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},	// S7: ASNR (COM)
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},	// S8: ASNR (ES)
-	{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},  // S9: ASWR (ER)
+	/*    [A-z],[0-9],    _,   \",   \n', SEOF,   #,	(,	\'		other	=
+		   L(0), D(1), U(2), M(3), Q(4), E(5), C(6), O(7),	O(8)	O(9)	O(10)	*/
+		{     1, ESNR, ESNR,	4,    4, ESWR,	  6, ESNR,	 4,		ESNR,	ESNR},	// S0: NOAS
+		{     1,    1,    1,    3,	  3,    3,	  3,	2,	 3,		  2,	2},	// S1: NOAS
+		{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},	// S2: ASNR (MVID)
+		{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},	// S3: ASWR (KEY)
+		{     4,    4,    4,    5,    5, ESWR,	 4,		4,	 5,		4,		4},	// S4: NOAS
+		{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},	// S5: ASNR (SL)
+		{     6,    6,    6,    6,    7,    7,	 7,		6,	 6,		6,		6},	// S6: NOAS
+		{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},	// S7: ASNR (COM)
+		{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},	// S8: ASNR (ES)
+		{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS},  // S9: ASWR (ER)
+		{    FS,   FS,   FS,   FS,   FS,   FS,	 FS,   FS,	FS,		FS,		FS}		// S10: ASNR(VID)
 };
 
 /* Define accepting states types */
@@ -241,6 +242,7 @@ static int stateType[NUM_STATES] = {
 	FSNR, /* 07 (COM) */
 	FSNR, /* 08 (Err1 - no retract) */
 	FSWR, /* 09 (Err2 - retract) */
+	FSNR  /* 10 (VID) */
 };
 
 /*
@@ -266,20 +268,20 @@ Automata definitions
 typedef Token(*PTR_ACCFUN)(string lexeme);
 
 /* Declare accepting states functions */
-Token funcSL	(string lexeme);
-Token funcIL	(string lexeme);
-Token funcID	(string lexeme);
-Token funcCMT   (string lexeme);
-Token funcKEY	(string lexeme);
-Token funcErr	(string lexeme);
-Token funcVID	(string lexeme);
+Token funcSL(string lexeme);
+Token funcIL(string lexeme);
+Token funcID(string lexeme);
+Token funcCMT(string lexeme);
+Token funcKEY(string lexeme);
+Token funcErr(string lexeme);
+Token funcVID(string lexeme);
 
-/* 
- * Accepting function (action) callback table (array) definition 
+/*
+ * Accepting function (action) callback table (array) definition
  * If you do not want to use the typedef, the equvalent declaration is:
  */
 
-/* TO_DO: Define final state table */
+ /* TO_DO: Define final state table */
 static PTR_ACCFUN finalStateTable[NUM_STATES] = {
 	NULL,      /* -    [00] */
 	NULL,      /* -    [01] */
@@ -291,6 +293,7 @@ static PTR_ACCFUN finalStateTable[NUM_STATES] = {
 	funcCMT,   /* COM  [07] */
 	funcErr,   /* ERR1 [08] */
 	funcErr,   /* ERR2 [09] */
+	funcVID    /* VID  [10] */
 };
 
 /*
@@ -316,6 +319,7 @@ static string keywordTable[KWT_SIZE] = {
 	"do",		/* KW09 */
 	"double",	/* KW10 */
 	"for"		/* KW11 */
+	
 };
 
 /* NEW SECTION: About indentation */
@@ -326,7 +330,7 @@ static string keywordTable[KWT_SIZE] = {
 
 #define INDENT '\t'  /* Tabulation */
 
-/* TO_DO: Should be used if no symbol table is implemented */
+ /* TO_DO: Should be used if no symbol table is implemented */
 typedef struct languageAttributes {
 	char indentationCharType;
 	int indentationCurrentPos;

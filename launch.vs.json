@@ -9,7 +9,7 @@
       "name": "VenomCompiler.exe",
       "args": [
         "s",
-        "INPUT1_Hello.ven"
+        "INPUT2_Volume.ven"
       ]
     }
   ]
