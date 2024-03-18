@@ -203,7 +203,28 @@ Token tokenizer(void) {
 			currentToken.code = DIV_T;
 			scData.scanHistogram[currentToken.code]++;
 			return currentToken;
+		case '\:':
+			currentToken.code = COL_T;
+			scData.scanHistogram[currentToken.code]++;
+			return currentToken;
+		case '>':
+			currentToken.code = GRO_T;
+			scData.scanHistogram[currentToken.code]++;
+			return currentToken;
+		case '<':
+			currentToken.code = LEO_T;
+			scData.scanHistogram[currentToken.code]++;
+			return currentToken;
+		case '+':
+			currentToken.code = INC_T;
+			scData.scanHistogram[currentToken.code]++;
+			return currentToken;
+		case '-':
+			currentToken.code = DEC_T;
+			scData.scanHistogram[currentToken.code]++;
+			return currentToken;
 
+		
 			/* Cases for END OF FILE */
 		case CHARSEOF0:
 			currentToken.code = SEOF_T;
@@ -248,6 +269,7 @@ Token tokenizer(void) {
 				readerAddchar(lexemeBuffer, readerGetchar(sourceBuffer));
 			readerAddchar(lexemeBuffer, READER_TERMINATOR);
 			currentToken = (*finalStateTable[state])(readerGetContent(lexemeBuffer, 0));
+			
 			readerRestore(lexemeBuffer); //xxx
 
 
@@ -512,6 +534,7 @@ Token funcKEY(string lexeme) {
 	}
 	else {
 		currentToken = funcVID(lexeme);
+		
 	}
 	return currentToken;
 }
@@ -613,6 +636,24 @@ void printToken(Token t) {
 	case DIV_T:
 		printf("DIV_T\t\t/\n");
 		break;
+	case GRO_T:
+		printf("GRO_T\t\t>\n");
+		break;
+	case LEO_T:
+		printf("LEO_T\t\t<\n");
+		break;
+	case INL_T:
+		printf("INL_T\t\t%d\n", t.attribute.intValue);
+		break;
+	case COL_T:
+		printf("COL_T\t\t:\n");
+		break;
+	case INC_T:
+		printf("INC_T\t\t+\n");
+		break;
+	case DEC_T:
+		printf("DEC_T\t\t-\n");
+		break;
 	default:
 		printf("Scanner error: invalid token code: %d\n", t.code);
 	}
@@ -646,16 +687,15 @@ TO_DO: (If necessary): HERE YOU WRITE YOUR ADDITIONAL FUNCTIONS (IF ANY).
 Token funcVID(string lexeme) {
 	Token currentToken = { 0 };
 	size_t length = strlen(lexeme);
-
+	
 	lexeme[length - 1] = '\0';
+	
 	currentToken.code = VID_T;
 	scData.scanHistogram[currentToken.code]++;
-
+	
 	readerRetract(sourceBuffer);
-
-
 	strncpy(currentToken.attribute.vidLexeme, lexeme, VID_LEN);
 	currentToken.attribute.vidLexeme[VID_LEN] = CHARSEOF0;
-
+	
 	return currentToken;
 }
