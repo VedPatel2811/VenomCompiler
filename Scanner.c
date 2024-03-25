@@ -39,7 +39,7 @@
 ************************************************************
 * File name: Scanner.c
 * Compiler: MS Visual Studio 2022
-* Course: CST 8152 – Compilers, Lab Section: [011, 012]
+* Course: CST 8152 â€“ Compilers, Lab Section: [011, 012]
 * Assignment: A22, A32.
 * Date: May 01 2022
 * Purpose: This file contains all functionalities from Scanner.
@@ -195,16 +195,20 @@ Token tokenizer(void) {
 			currentToken.code = EQ_T;
 			scData.scanHistogram[currentToken.code]++;
 			return currentToken;
+		case '+':
+			currentToken.code = ADD_T;
+			scData.scanHistogram[currentToken.code]++;
+			return currentToken;
+		case '-':
+			currentToken.code = SUB_T;
+			scData.scanHistogram[currentToken.code]++;
+			return currentToken;
 		case '*':
 			currentToken.code = MULT_T;
 			scData.scanHistogram[currentToken.code]++;
 			return currentToken;
 		case '/':
 			currentToken.code = DIV_T;
-			scData.scanHistogram[currentToken.code]++;
-			return currentToken;
-		case '\:':
-			currentToken.code = COL_T;
 			scData.scanHistogram[currentToken.code]++;
 			return currentToken;
 		case '>':
@@ -215,16 +219,11 @@ Token tokenizer(void) {
 			currentToken.code = LEO_T;
 			scData.scanHistogram[currentToken.code]++;
 			return currentToken;
-		case '+':
-			currentToken.code = INC_T;
-			scData.scanHistogram[currentToken.code]++;
-			return currentToken;
-		case '-':
-			currentToken.code = DEC_T;
+		case ':':
+			currentToken.code = COL_T;
 			scData.scanHistogram[currentToken.code]++;
 			return currentToken;
 
-		
 			/* Cases for END OF FILE */
 		case CHARSEOF0:
 			currentToken.code = SEOF_T;
@@ -364,6 +363,9 @@ int nextClass(char c) {
 	case CHARSEOF255:
 		val = 5;
 		break;
+	case MNID_SUF:
+		val = 7;
+		break;
 	default:
 		if (isalpha(c))
 			val = 0;
@@ -452,9 +454,13 @@ Token funcID(string lexeme) {
 	switch (lastch) {
 	case MNID_SUF:
 		lexeme[length - 1] = '\0';
-		currentToken.code = MNID_T;
+		currentToken = funcKEY(lexeme);
+		if (currentToken.code != KW_T)
+		{
+			currentToken.code = MNID_T;
+			isID = True;
+		}
 		scData.scanHistogram[currentToken.code]++;
-		isID = True;
 		readerRetract(sourceBuffer);
 		break;
 	default:
@@ -630,6 +636,12 @@ void printToken(Token t) {
 	case EQ_T:
 		printf("EQ_T\t\t=\n");
 		break;
+	case ADD_T:
+		printf("ADD_T\t\t+\n");
+		break;
+	case SUB_T:
+		printf("SUB_T\t\t-\n");
+		break;
 	case MULT_T:
 		printf("MULT_T\t\t*\n");
 		break;
@@ -647,12 +659,6 @@ void printToken(Token t) {
 		break;
 	case COL_T:
 		printf("COL_T\t\t:\n");
-		break;
-	case INC_T:
-		printf("INC_T\t\t+\n");
-		break;
-	case DEC_T:
-		printf("DEC_T\t\t-\n");
 		break;
 	default:
 		printf("Scanner error: invalid token code: %d\n", t.code);
@@ -688,14 +694,23 @@ Token funcVID(string lexeme) {
 	Token currentToken = { 0 };
 	size_t length = strlen(lexeme);
 	
-	lexeme[length - 1] = '\0';
+	if (!checkSymbol(lexeme[length - 1])) { lexeme[length - 1] = '\0'; readerRetract(sourceBuffer); }
 	
 	currentToken.code = VID_T;
 	scData.scanHistogram[currentToken.code]++;
 	
-	readerRetract(sourceBuffer);
+	//readerRetract(sourceBuffer);
 	strncpy(currentToken.attribute.vidLexeme, lexeme, VID_LEN);
 	currentToken.attribute.vidLexeme[VID_LEN] = CHARSEOF0;
 	
 	return currentToken;
+}
+
+int checkSymbol(char ch)
+{
+	if (ch >= 'a' && ch <= 'z') return 1;
+	if (ch >= 'A' && ch <= 'Z') return 1;
+	if (ch >= '0' && ch <= '9') return 1;
+	if (ch == '_') return 1;
+	return 0;
 }
