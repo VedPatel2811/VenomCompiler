@@ -39,7 +39,7 @@
 ************************************************************
 * File name: Scanner.h
 * Compiler: MS Visual Studio 2022
-* Course: CST 8152 – Compilers, Lab Section: [011, 012]
+* Course: CST 8152 â€“ Compilers, Lab Section: [011, 012]
 * Assignment: A22, A32.
 * Date: May 01 2022
 * Purpose: This file is the main header for Scanner (.h)
@@ -73,7 +73,7 @@
 #define RTE_CODE 1  /* Value for run-time error */
 
 /* TO_DO: Define the number of tokens */
-#define NUM_TOKENS 28
+#define NUM_TOKENS 29
 
 /* TO_DO: Define Token codes - Create your token classes */
 enum TOKENS {
@@ -103,8 +103,9 @@ enum TOKENS {
 	DQT_T,		/* 23: Double quote token */
 	VID_T,		/* 24: Variable token */
 	GRO_T,		/* 25: Grater-than operator token */
-	LEO_T,		/* 26: Less-than operator token */
-	DEC_T
+	LEO_T,		/* 26: Less-than operator token */ 
+	ADD_T,		/* 27: Addition operator token */
+	SUB_T		/* 27: Subtraction operator token */
 };
 
 /* TO_DO: Define the list of keywords */
@@ -136,7 +137,8 @@ static string tokenStrTable[NUM_TOKENS] = {
 	"VID_T",
 	"GRO_T",
 	"LEO_T",
-	"DEC_T"
+	"ADD_T",
+	"SUB_T"
 };
 
 /* TO_DO: Operators token attributes */
@@ -206,29 +208,31 @@ typedef struct scannerData {
 #define COMM_SYM '#'
 
 /* TO_DO: Error states and illegal state */
-#define ESNR	8		/* Error state with no retract */
-#define ESWR	9		/* Error state with retract */
+#define ESNR	10		/* Error state with no retract */
+#define ESWR	10		/* Error state with retract */
 #define FS		10		/* Illegal state */
 
  /* TO_DO: State transition table definition */
-#define NUM_STATES		12 //rows
-#define CHAR_CLASSES	11 //columns
+#define NUM_STATES		11 //rows
+#define CHAR_CLASSES	12 //columns
 
 /* TO_DO: Transition table - type of states defined in separate table */
 static int transitionTable[NUM_STATES][CHAR_CLASSES] = {
 	/*    [A-z],[0-9],    ,   ",   \n', SEOF,   #,    (,    '        other    =
 		   L(0), D(1), U(2), M(3), Q(4), E(5), C(6), O(7),    O(8)    O(9)    O(10)    */
-		{     1,  10, ESNR,    4,    4, ESWR,      6, ESNR,     4,        ESNR,    ESNR},    // S0: NOAS
-		{     1,    1,    1,    3,      3,    3,    3,    2,     3,          2,    10},    // S1: NOAS
+		{     1,    6, ESNR,    8,    4, ESWR,    4, ESNR,     4,        ESNR,    ESNR},    // S0: NOAS
+		{     1,    1,    3,    3,    3,    3,    3,    2,     3,          3,		3},    // S1: NOAS
 		{    FS,   FS,   FS,   FS,   FS,   FS,     FS,   FS,    FS,        FS,        FS},    // S2: ASNR (MVID)
 		{    FS,   FS,   FS,   FS,   FS,   FS,     FS,   FS,    FS,        FS,        FS},    // S3: ASWR (KEY)
-		{     4,    4,    4,    5,    5, ESWR,     4,      4,    5,        4,        4},    // S4: NOAS
-		{    FS,   FS,   FS,   FS,   FS,   FS,     FS,   FS,    FS,        FS,        FS},    // S5: ASNR (SL)
-		{     6,    6,    6,    6,    7,    7,     7,     6,    6,        6,        6},    // S6: NOAS
+		{     4,    4,    4,    4,    5, ESWR,     4,      4,    4,        4,        4},    // S4: NOAS
+		{    FS,   FS,   FS,   FS,   FS,   FS,     FS,   FS,    FS,        FS,        FS},    // S5: ASNR (Comment)
+		{     7,    6,    7,    7,    7,    7,     7,     7,    7,         7,        7},    // S6: NOAS
 		{    FS,   FS,   FS,   FS,   FS,   FS,     FS,   FS,    FS,        FS,        FS},    // S7: ASNR (COM)
-		{    FS,   FS,   FS,   FS,   FS,   FS,     FS,   FS,    FS,        FS,        FS},    // S8: ASNR (ES)
+		{     8,    8,    8,    9,    8,    8,      8,    8,     8,         8,         8},    // S8: ASNR (ES)
 		{    FS,   FS,   FS,   FS,   FS,   FS,     FS,   FS,    FS,        FS,        FS},  // S9: ASWR (ER)
-		{     FS,   FS,   FS,  FS,   FS,   FS,     FS,   FS,    FS,        FS,    FS},    // S10: ASWR (IL)
+		{    FS,   FS,   FS,   FS,   FS,   FS,     FS,   FS,    FS,        FS,        FS}/* // S10: Error without Retract
+		{11,   10,   11,   11,   11,   11,     11,   11,    11,        10,    11},    // S10: ASWR (IL)
+		{    FS,   FS,   FS,   FS,   FS,   FS,     FS,   FS,    FS,        FS,        FS} // S11: ASWR (FL)*/
 };
 
 
@@ -245,11 +249,12 @@ static int stateType[NUM_STATES] = {
 	FSWR, /* 03 (KEY) */
 	NOFS, /* 04 */
 	FSNR, /* 05 (SL) */
-	NOFS, /* 06 */
+	NOFS, /* 06 (int literal) */
 	FSNR, /* 07 (COM) */
-	FSNR, /* 08 (Err1 - no retract) */
-	FSWR, /* 09 (Err2 - retract) */
-	FSNR /* 10 (int literal)*/
+	NOFS, /* 08 (Err1 - no retract) */
+	FSNR, /* 09 (Err2 - retract) */
+	FSNR/*, /* 10 (Err1 - no retract)
+	FSNR  /* 11 (int literal)*/
 };
 
 /*
@@ -295,12 +300,12 @@ static PTR_ACCFUN finalStateTable[NUM_STATES] = {
 	funcID,    /* MNID [02] */
 	funcKEY,   /* KEY  [03] */
 	NULL,      /* -    [04] */
-	funcSL,    /* SL   [05] */
+	funcCMT,    /* SL   [05] */
 	NULL,      /* -    [06] */
-	funcCMT,   /* COM  [07] */
-	funcErr,   /* ERR1 [08] */
-	funcErr,   /* ERR2 [09] */
-	funcIL
+	funcIL,   /* COM  [07] */
+	NULL,   /* [08] */
+	funcSL,   /* ERR2 [09] */
+	funcErr	 /* ERR1 */
 };
 
 /*
@@ -323,8 +328,8 @@ static string keywordTable[KWT_SIZE] = {
 	"elif",	    /* KW06 */ //then
 	"else",		/* KW07 */
 	"while",	/* KW08 */
-	"do",		/* KW09 */
-	"double",	/* KW10 */
+	"or",		/* KW09 */
+	"and",	    /* KW10 */
 	"for",		/* KW11 */
 };
 
